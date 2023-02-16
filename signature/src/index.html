@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+
+</head>
+<body>
+    <button onClick="signatureFun()">签名</button>
+</body>
+</html>
+
+<script>
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+   
+    const signatureFun = async () => {
+        const signer = await provider.getSigner();
+  
+        const signerAddress = await signer.getAddress();
+        const contract = new ethers.Contract(
+            "0x606494D058886b3D5f63F434bBD3F6Ba5e8da954",
+            ["function verify(address _signer,address _to,uint256 _amount,uint256 _nonce,string memory _message,uint8 v,bytes32 r,bytes32 s) external pure returns (bool)"],
+            signer
+        )
+
+        const to = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+        const amount = "100000";
+        const nonce = "123";
+        const message = "message signature";
+        const hash = ethers.utils.solidityKeccak256(["address","uint256","uint256","string"], [to, amount, nonce, message]);
+        const hasByte = ethers.utils.arrayify(hash);
+        const sig = await signer.signMessage(hasByte);
+        const { v, r, s } = ethers.utils.splitSignature(sig);
+
+        const result = await contract.verify(signerAddress, to, amount, nonce, message, v, r, s)
+        console.log(result);
+    }
+    
+</script>
