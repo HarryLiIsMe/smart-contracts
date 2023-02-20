@@ -31,3 +31,7 @@ npm-debug.log
 */.env
 */artifacts
 */cache
+*/typechain-types
+*/*/.env
+*/*/src/node_modules
+*/*/src/dist
